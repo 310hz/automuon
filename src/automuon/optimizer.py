@@ -1,3 +1,5 @@
+from typing import Callable
+
 import torch
 import torch.distributed as dist
 from muon import MuonWithAuxAdam, SingleDeviceMuonWithAuxAdam
@@ -7,7 +9,7 @@ def get_muon_with_adam(
     params,
     muon_args: dict | None = None,
     adam_args: dict | None = None,
-    rule: callable | None = None,
+    rule: Callable[[str, torch.nn.Parameter], bool] | None = None,
     default_optim: str = "muon",
     distributed: bool | None = None,
 ) -> torch.optim.Optimizer:
