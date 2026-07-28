@@ -2,7 +2,6 @@ import torch.nn as nn
 
 
 def _mark(params, flag):
-    original = params
     if isinstance(params, (nn.Parameter, nn.Module)):
         params = [params]
     for param in params:
@@ -11,17 +10,20 @@ def _mark(params, flag):
                 setattr(p, "_automuon_flag", flag)
         else:
             setattr(param, "_automuon_flag", flag)
-    return original
 
 
 def with_muon(params):
-    return _mark(params, True)
+    _mark(params, True)
+    return params
 
 def without_muon(params):
-    return _mark(params, False)
+    _mark(params, False)
+    return params
 
 def with_adam(params):
-    return _mark(params, True)
+    _mark(params, True)
+    return params
 
 def without_adam(params):
-    return _mark(params, False)
+    _mark(params, False)
+    return params
