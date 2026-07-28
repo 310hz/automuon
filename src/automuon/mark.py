@@ -6,6 +6,7 @@ import torch.nn as nn
 _Markable = nn.Module | nn.Parameter
 _MarkableT = TypeVar("_MarkableT", bound=_Markable)
 
+
 def with_muon(param: _MarkableT) -> _MarkableT:
     _mark(param, True)
     return param
