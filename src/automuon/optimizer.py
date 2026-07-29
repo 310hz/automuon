@@ -9,13 +9,14 @@ from muon import MuonWithAuxAdam, SingleDeviceMuonWithAuxAdam
 Param: TypeAlias = torch.nn.Parameter
 NamedParam: TypeAlias = tuple[str, Param]
 Params: TypeAlias = Iterable[Param] | Iterable[NamedParam]
+Rule: TypeAlias = Callable[[str, Param], bool]
 
 
 def get_muon_with_adam(
     params: Params,
     muon_args: dict | None = None,
     adam_args: dict | None = None,
-    rule: Callable[[str, torch.nn.Parameter], bool] | None = None,
+    rule: Rule | None = None,
     default_optim: str = "muon",
     distributed: bool | None = None,
 ) -> torch.optim.Optimizer:
