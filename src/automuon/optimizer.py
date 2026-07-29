@@ -45,7 +45,7 @@ def get_muon_with_adam(
         elif hasattr(param, "_automuon_flag"):
             with_muon = param._automuon_flag
         elif rule:
-            with_muon = rule(name, param)
+            with_muon = not rule(name, param)
 
         if with_muon:
             muon_params.append(param)
