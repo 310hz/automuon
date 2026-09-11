@@ -1,30 +1,27 @@
-from typing import TypeAlias, TypeVar
-
 import torch.nn as nn
 
 
 INF = float("inf")
 
-_Markable: TypeAlias = nn.Module | nn.Parameter
-_MarkableT = TypeVar("_MarkableT", bound=_Markable)
+type _Markable = nn.Module | nn.Parameter
 
 
-def with_muon(param: _MarkableT) -> _MarkableT:
+def with_muon[MarkableT: _Markable](param: MarkableT) -> MarkableT:
     _mark(param, True)
     return param
 
 
-def without_muon(param: _MarkableT) -> _MarkableT:
+def without_muon[MarkableT: _Markable](param: MarkableT) -> MarkableT:
     _mark(param, False)
     return param
 
 
-def with_adam(param: _MarkableT) -> _MarkableT:
+def with_adam[MarkableT: _Markable](param: MarkableT) -> MarkableT:
     _mark(param, False)
     return param
 
 
-def without_adam(param: _MarkableT) -> _MarkableT:
+def without_adam[MarkableT: _Markable](param: MarkableT) -> MarkableT:
     _mark(param, True)
     return param
 
