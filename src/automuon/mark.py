@@ -32,13 +32,13 @@ def _mark(param: _Markable, flag: bool) -> None:
     if isinstance(param, nn.Module):
         for n, p in param.named_parameters():
             level = n.count(".")
-            if getattr(p, FLAG_LEVEL_NAME, INF) <= level:
-                continue
-            setattr(p, FLAG_NAME, flag)
-            setattr(p, FLAG_LEVEL_NAME, level)
+            if getattr(p, FLAG_LEVEL_NAME, INF) > level:
+                setattr(p, FLAG_NAME, flag)
+                setattr(p, FLAG_LEVEL_NAME, level)
     elif isinstance(param, nn.Parameter):
-        setattr(param, FLAG_NAME, flag)
-        setattr(param, FLAG_LEVEL_NAME, 0)
+        if getattr(param, FLAG_LEVEL_NAME, INF) > 0:
+            setattr(param, FLAG_NAME, flag)
+            setattr(param, FLAG_LEVEL_NAME, 0)
     else:
         raise TypeError(
             "Expected the input to a marking function to be an "
