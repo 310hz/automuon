@@ -81,17 +81,17 @@ def test_optimizer_default_muon():
 def test_optimizer_default_adam():
     model = Model()
     optimizer_muon, optimizer_adam = get_muon_and_adam(model.parameters(), default="adam")
-    params_muon = {
+    params_muon = [
         model.fc2.weight, model.param21,
         model.fc5.weight, model.param51,
-    }
-    params_adam = {
+    ]
+    params_adam = [
         model.fc1.weight, model.fc1.bias, model.param11, model.param12,
         model.fc2.bias, model.param22,
         model.fc3.weight, model.fc3.bias, model.param31, model.param32,
         model.fc4.weight, model.fc4.bias, model.param41, model.param42,
         model.fc5.bias, model.param52,
-    }
+    ]
     _check_optimizer(optimizer_muon, optimizer_adam, params_muon, params_adam)
 
 
@@ -100,5 +100,18 @@ def _check_optimizer(optimizer_muon, optimizer_adam, params_muon, params_adam):
     assert isinstance(optimizer_adam, torch.optim.Adam)
     assert len(optimizer_muon.param_groups) == 1
     assert len(optimizer_adam.param_groups) == 1
-    assert set(optimizer_muon.param_groups[0]['params']) == params_muon
-    assert set(optimizer_adam.param_groups[0]['params']) == params_adam
+
+    params_muon_app = optimizer_muon.param_groups[0]["params"]
+    params_adam_app = optimizer_adam.param_groups[0]["params"]
+    for param in params_muon:
+        assert _is_included(param, params_muon_app)
+    for param in params_adam:
+        assert _is_included(param, params_adam_app)
+    for param in params_muon_app:
+        assert _is_included(param, params_muon)
+    for param in params_adam_app:
+        assert _is_included(param, params_adam)
+
+
+def _is_included(param, params):
+    return any(param is p for p in params)
