@@ -6,9 +6,9 @@ readme = "README.md"
 authors = [
     { name = "310hz", email = "90894519+310hz@users.noreply.github.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
-    "torch>=2.0",
+    "torch>=2.9",
 ]
 
 [build-system]
@@ -21,7 +21,7 @@ tag-pattern = "^v(?P<version>.+)$"
 
 [tool.ruff]
 line-length = 79
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
