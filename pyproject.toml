@@ -27,6 +27,9 @@ target-version = "py312"
 select = ["E", "F", "I", "UP", "B"]
 ignore = ["B010"]
 
+[tool.ty.src]
+exclude = ["tests"]
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
