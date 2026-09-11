@@ -1,11 +1,11 @@
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 import torch.nn as nn
 
 
 INF = float("inf")
 
-_Markable = nn.Module | nn.Parameter
+_Markable: TypeAlias = nn.Module | nn.Parameter
 _MarkableT = TypeVar("_MarkableT", bound=_Markable)
 
 
@@ -13,13 +13,16 @@ def with_muon(param: _MarkableT) -> _MarkableT:
     _mark(param, True)
     return param
 
+
 def without_muon(param: _MarkableT) -> _MarkableT:
     _mark(param, False)
     return param
 
+
 def with_adam(param: _MarkableT) -> _MarkableT:
     _mark(param, False)
     return param
+
 
 def without_adam(param: _MarkableT) -> _MarkableT:
     _mark(param, True)
