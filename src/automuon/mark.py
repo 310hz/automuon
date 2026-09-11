@@ -1,6 +1,5 @@
 import torch.nn as nn
 
-
 INF = float("inf")
 FLAG_NAME = "_automuon_flag"
 FLAG_LEVEL_NAME = "_automuon_flag_level"

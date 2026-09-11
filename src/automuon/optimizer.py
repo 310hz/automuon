@@ -5,7 +5,6 @@ import torch
 
 from .mark import FLAG_NAME
 
-
 type Param = torch.nn.Parameter
 type NamedParam = tuple[str, Param]
 type Params = Iterable[Param] | Iterable[NamedParam]
