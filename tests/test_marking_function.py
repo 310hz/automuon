@@ -5,21 +5,26 @@ import torch.nn as nn
 from automuon import with_muon, without_muon, with_adam, without_adam
 
 
+FLAG_NAME = "_automuon_flag"
+
+
 def test_arg_types():
+    marking_functions = (
+        with_muon,
+        without_muon,
+        with_adam,
+        without_adam,
+    )
     objects_ok = [nn.Linear(3, 2), nn.Parameter(torch.randn(3, 2))]
     for obj in objects_ok:
-        with_muon(obj)
-        without_muon(obj)
-        with_adam(obj)
-        without_adam(obj)
+        for marking_function in marking_functions:
+            marking_function(obj)
 
     objects_ng = [1, [1, 2, 3], (1, 2, 3), torch.tensor([1., 2., 3.])]
     for obj in objects_ng:
         with pytest.raises(TypeError):
-            with_muon(obj)
-            without_muon(obj)
-            with_adam(obj)
-            without_adam(obj)
+            for marking_function in marking_functions:
+                marking_function(obj)
 
 
 def test_symmetry():
@@ -31,6 +36,21 @@ def test_symmetry():
     ]
     for layer in layers:
         for param in layer.parameters():
-            assert with_muon(param)._automuon_flag == without_adam(param)._automuon_flag
-            assert without_muon(param)._automuon_flag == with_adam(param)._automuon_flag
-
+            flag_with_muon = getattr(
+                with_muon(param),
+                FLAG_NAME,
+            )
+            flag_without_adam = getattr(
+                without_adam(param),
+                FLAG_NAME,
+            )
+            flag_without_muon = getattr(
+                without_muon(param),
+                FLAG_NAME,
+            )
+            flag_with_adam = getattr(
+                with_adam(param),
+                FLAG_NAME,
+            )
+            assert flag_with_muon == flag_without_adam
+            assert flag_without_muon == flag_with_adam
