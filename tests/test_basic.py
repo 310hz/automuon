@@ -99,6 +99,18 @@ def test_optimizer_default_adam():
     _check_optimizer(optimizer_muon, optimizer_adam, params_muon, params_adam)
 
 
+def test_optimizer_all_parameters_assigned_to_muon():
+    parameter = nn.Parameter(torch.randn(3, 2))
+    optimizer_muon, optimizer_adam = get_muon_and_adam([parameter])
+    _check_optimizer(optimizer_muon, optimizer_adam, [parameter], [])
+
+
+def test_optimizer_all_parameters_assigned_to_adam():
+    parameter = nn.Parameter(torch.randn(3))
+    optimizer_muon, optimizer_adam = get_muon_and_adam([parameter])
+    _check_optimizer(optimizer_muon, optimizer_adam, [], [parameter])
+
+
 def _check_optimizer(optimizer_muon, optimizer_adam, params_muon, params_adam):
     assert isinstance(optimizer_muon, torch.optim.Muon)
     assert isinstance(optimizer_adam, torch.optim.Adam)

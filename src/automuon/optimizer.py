@@ -53,8 +53,8 @@ def get_muon_and_adam(
         else:
             adam_params.append(param)
 
-    optimizer_muon = torch.optim.Muon(muon_params, **muon_args)
-    optimizer_adam = torch.optim.AdamW(adam_params, **adam_args)
+    optimizer_muon = torch.optim.Muon([{"params": muon_params}], **muon_args)
+    optimizer_adam = torch.optim.AdamW([{"params": adam_params}], **adam_args)
     return optimizer_muon, optimizer_adam
 
 
