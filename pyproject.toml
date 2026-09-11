@@ -18,3 +18,10 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
 tag-pattern = "^v(?P<version>.+)$"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.7",
+    "ty>=0.0.80",
+]
