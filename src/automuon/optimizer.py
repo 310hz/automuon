@@ -18,6 +18,28 @@ def get_muon_and_adam(
     rule: Rule | None = None,
     default: Literal["muon", "adam"] = "muon",
 ) -> tuple[torch.optim.Muon, torch.optim.AdamW]:
+    """Create Muon and AdamW optimizers from an iterable of parameters.
+
+    Parameters that are not two-dimensional are always assigned to AdamW.
+    For two-dimensional parameters, an explicit mark takes precedence over
+    ``rule``, followed by ``default``.
+
+    Args:
+        params: Parameters to assign. When ``rule`` is provided, each item
+            must be a ``(name, parameter)`` tuple.
+        muon_args: Keyword arguments for :class:`torch.optim.Muon`.
+        adam_args: Keyword arguments for :class:`torch.optim.AdamW`.
+        rule: A callable that returns ``True`` for Muon or ``False`` for
+            AdamW. It is called only for unmarked two-dimensional parameters.
+        default: The destination for unmarked parameters when no rule applies.
+
+    Returns:
+        The Muon optimizer followed by the AdamW optimizer.
+
+    Raises:
+        TypeError: If items in ``params`` do not have the expected form.
+        ValueError: If ``default`` is neither ``"muon"`` nor ``"adam"``.
+    """
 
     muon_params = []
     adam_params = []

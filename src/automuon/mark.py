@@ -8,21 +8,53 @@ type _Markable = nn.Module | nn.Parameter
 
 
 def with_muon[MarkableT: _Markable](param: MarkableT) -> MarkableT:
+    """Mark a module or parameter for assignment to Muon.
+
+    Args:
+        param: The module or parameter to mark.
+
+    Returns:
+        The original module or parameter.
+    """
     _mark(param, True)
     return param
 
 
 def without_muon[MarkableT: _Markable](param: MarkableT) -> MarkableT:
+    """Mark a module or parameter for exclusion from Muon.
+
+    Args:
+        param: The module or parameter to mark.
+
+    Returns:
+        The original module or parameter.
+    """
     _mark(param, False)
     return param
 
 
 def with_adam[MarkableT: _Markable](param: MarkableT) -> MarkableT:
+    """Mark a module or parameter for assignment to Adam.
+
+    Args:
+        param: The module or parameter to mark.
+
+    Returns:
+        The original module or parameter.
+    """
     _mark(param, False)
     return param
 
 
 def without_adam[MarkableT: _Markable](param: MarkableT) -> MarkableT:
+    """Mark a module or parameter for exclusion from Adam.
+
+    Args:
+        param: The module or parameter to mark.
+
+    Returns:
+        The original module or parameter.
+    """
     _mark(param, True)
     return param
 
