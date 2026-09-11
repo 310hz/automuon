@@ -37,7 +37,6 @@ optimizer_muon, optimizer_adam = get_muon_and_adam(
     muon_args={"lr": 1e-3},
     adam_args={"lr": 1e-3, "betas": (0.9, 0.95)},
 )
-
 ```
 
 You can also use a `rule` to assign parameters without marking them. Pass `model.named_parameters()` so the rule can inspect parameter names:
