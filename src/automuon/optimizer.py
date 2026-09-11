@@ -1,13 +1,13 @@
 from collections.abc import Callable, Iterable
-from typing import TypeAlias
+from typing import Literal
 
 import torch
 
 
-Param: TypeAlias = torch.nn.Parameter
-NamedParam: TypeAlias = tuple[str, Param]
-Params: TypeAlias = Iterable[Param] | Iterable[NamedParam]
-Rule: TypeAlias = Callable[[str, Param], bool]
+type Param = torch.nn.Parameter
+type NamedParam = tuple[str, Param]
+type Params = Iterable[Param] | Iterable[NamedParam]
+type Rule = Callable[[str, Param], bool]
 
 
 def get_muon_and_adam(
@@ -15,8 +15,8 @@ def get_muon_and_adam(
     muon_args: dict | None = None,
     adam_args: dict | None = None,
     rule: Rule | None = None,
-    default: str = "muon",
-) -> tuple[torch.optim.Optimizer, torch.optim.Optimizer]:
+    default: Literal["muon", "adam"] = "muon",
+) -> tuple[torch.optim.Muon, torch.optim.AdamW]:
 
     muon_params = []
     adam_params = []
@@ -24,7 +24,29 @@ def get_muon_and_adam(
     adam_args = adam_args or {}
 
     for param in params:
-        if with_muon(param, rule, default):
+        if rule:
+            name, param = _check_named_param(param)
+        else:
+            param = _check_param(param)
+
+        match default:
+            case "muon":
+                flag = True
+            case "adam":
+                flag = False
+            case _:
+                raise ValueError(
+                    f"Invalid default value: {default}. Must be 'muon' or 'adam'."
+                )
+
+        if param.ndim != 2:
+            flag = False
+        elif hasattr(param, "_automuon_flag"):
+            flag = param._automuon_flag
+        elif rule:
+            flag = rule(name, param)
+
+        if flag:
             muon_params.append(param)
         else:
             adam_params.append(param)
@@ -32,32 +54,6 @@ def get_muon_and_adam(
     optimizer_muon = torch.optim.Muon(muon_params, **muon_args)
     optimizer_adam = torch.optim.AdamW(adam_params, **adam_args)
     return optimizer_muon, optimizer_adam
-
-
-def with_muon(param, rule, default):
-    if rule:
-        name, param = _check_named_param(param)
-    else:
-        param = _check_param(param)
-
-    match default:
-        case "muon":
-            flag = True
-        case "adam":
-            flag = False
-        case _:
-            raise ValueError(
-                f"Invalid default value: {default}. Must be 'muon' or 'adam'."
-            )
-
-    if param.ndim != 2:
-        flag = False
-    elif hasattr(param, "_automuon_flag"):
-        flag = param._automuon_flag
-    elif rule:
-        flag = rule(name, param)
-
-    return flag
 
 
 def _check_named_param(param):
