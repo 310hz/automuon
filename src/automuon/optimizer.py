@@ -15,7 +15,7 @@ def get_muon_and_adam(
     muon_args: dict | None = None,
     adam_args: dict | None = None,
     rule: Rule | None = None,
-    default_optim: str = "muon",
+    default: str = "muon",
 ) -> tuple[torch.optim.Optimizer, torch.optim.Optimizer]:
 
     muon_params = []
@@ -24,7 +24,7 @@ def get_muon_and_adam(
     adam_args = adam_args or {}
 
     for param in params:
-        if with_muon(param, rule, default_optim):
+        if with_muon(param, rule, default):
             muon_params.append(param)
         else:
             adam_params.append(param)
@@ -34,19 +34,19 @@ def get_muon_and_adam(
     return optimizer_muon, optimizer_adam
 
 
-def with_muon(param, rule, default_optim):
+def with_muon(param, rule, default):
     if rule:
         name, param = _check_named_param(param)
     else:
         param = _check_param(param)
 
-    match default_optim:
+    match default:
         case "muon":
             flag = True
         case "adam":
             flag = False
         case _:
-            raise ValueError(f"Invalid default_optim: {default_optim}")
+            raise ValueError(f"Invalid default: {default}")
 
     if param.ndim != 2:
         flag = False
