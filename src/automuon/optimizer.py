@@ -3,6 +3,8 @@ from typing import Literal
 
 import torch
 
+from .mark import FLAG_NAME
+
 
 type Param = torch.nn.Parameter
 type NamedParam = tuple[str, Param]
@@ -36,13 +38,14 @@ def get_muon_and_adam(
                 flag = False
             case _:
                 raise ValueError(
-                    f"Invalid default value: {default}. Must be 'muon' or 'adam'."
+                    f"Invalid default value: {default}. "
+                    "Must be 'muon' or 'adam'."
                 )
 
         if param.ndim != 2:
             flag = False
-        elif hasattr(param, "_automuon_flag"):
-            flag = param._automuon_flag
+        elif hasattr(param, FLAG_NAME):
+            flag = getattr(param, FLAG_NAME)
         elif rule:
             flag = rule(name, param)
 

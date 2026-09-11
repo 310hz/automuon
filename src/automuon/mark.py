@@ -2,6 +2,8 @@ import torch.nn as nn
 
 
 INF = float("inf")
+FLAG_NAME = "_automuon_flag"
+FLAG_LEVEL_NAME = "_automuon_flag_level"
 
 type _Markable = nn.Module | nn.Parameter
 
@@ -30,12 +32,13 @@ def _mark(param: _Markable, flag: bool) -> None:
     if isinstance(param, nn.Module):
         for n, p in param.named_parameters():
             level = n.count(".")
-            if getattr(p, "_automuon_flag_level", INF) < level:
+            if getattr(p, FLAG_LEVEL_NAME, INF) < level:
                 continue
-            setattr(p, "_automuon_flag", flag)
-            setattr(p, "_automuon_flag_level", level)
+            setattr(p, FLAG_NAME, flag)
+            setattr(p, FLAG_LEVEL_NAME, level)
     elif isinstance(param, nn.Parameter):
-        setattr(param, "_automuon_flag", flag)
+        setattr(param, FLAG_NAME, flag)
+        setattr(param, FLAG_LEVEL_NAME, 0)
     else:
         raise TypeError(
             "Expected the input to a marking function to be an "
