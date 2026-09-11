@@ -3,6 +3,8 @@ from typing import TypeVar
 import torch.nn as nn
 
 
+INF = float("inf")
+
 _Markable = nn.Module | nn.Parameter
 _MarkableT = TypeVar("_MarkableT", bound=_Markable)
 
@@ -26,8 +28,12 @@ def without_adam(param: _MarkableT) -> _MarkableT:
 
 def _mark(param: _Markable, flag: bool) -> None:
     if isinstance(param, nn.Module):
-        for p in param.parameters():
+        for n, p in param.named_parameters():
+            level = n.count(".")
+            if getattr(p, "_automuon_flag_level", INF) < level:
+                continue
             setattr(p, "_automuon_flag", flag)
+            setattr(p, "_automuon_flag_level", level)
     elif isinstance(param, nn.Parameter):
         setattr(param, "_automuon_flag", flag)
     else:
