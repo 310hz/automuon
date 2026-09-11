@@ -36,6 +36,7 @@ tag-pattern = "^v(?P<version>.+)$"
 [tool.ruff]
 line-length = 79
 target-version = "py312"
+exclude = ["tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
