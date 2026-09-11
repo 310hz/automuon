@@ -1,5 +1,5 @@
 from collections.abc import Callable, Iterable
-from typing import Callable, TypeAlias
+from typing import TypeAlias
 
 import torch
 

@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from automuon import without_muon, get_muon_and_adam
+from automuon import get_muon_and_adam, without_muon
 
 
 class Model(nn.Module):
