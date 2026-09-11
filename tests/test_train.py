@@ -70,5 +70,5 @@ def test_train():
         optimizer_muon2.step()
         optimizer_adam2.step()
 
-    for p1, p2 in zip(model1.parameters(), model2.parameters()):
+    for p1, p2 in zip(model1.parameters(), model2.parameters(), strict=True):
         assert torch.allclose(p1, p2)

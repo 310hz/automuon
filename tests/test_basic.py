@@ -9,7 +9,6 @@ from automuon import (
     without_muon,
 )
 
-
 FLAG_NAME = "_automuon_flag"
 
 

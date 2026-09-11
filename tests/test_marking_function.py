@@ -2,8 +2,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from automuon import with_muon, without_muon, with_adam, without_adam
-
+from automuon import with_adam, with_muon, without_adam, without_muon
 
 FLAG_NAME = "_automuon_flag"
 
@@ -20,7 +19,7 @@ def test_arg_types():
         for marking_function in marking_functions:
             marking_function(obj)
 
-    objects_ng = [1, [1, 2, 3], (1, 2, 3), torch.tensor([1., 2., 3.])]
+    objects_ng = [1, [1, 2, 3], (1, 2, 3), torch.tensor([1.0, 2.0, 3.0])]
     for obj in objects_ng:
         with pytest.raises(TypeError):
             for marking_function in marking_functions:

@@ -1,7 +1,6 @@
 import torch.nn as nn
 
-from automuon import with_muon, without_muon, get_muon_and_adam
-
+from automuon import get_muon_and_adam, with_muon, without_muon
 
 FLAG_NAME = "_automuon_flag"
 
