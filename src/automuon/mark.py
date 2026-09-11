@@ -32,7 +32,7 @@ def _mark(param: _Markable, flag: bool) -> None:
     if isinstance(param, nn.Module):
         for n, p in param.named_parameters():
             level = n.count(".")
-            if getattr(p, FLAG_LEVEL_NAME, INF) < level:
+            if getattr(p, FLAG_LEVEL_NAME, INF) <= level:
                 continue
             setattr(p, FLAG_NAME, flag)
             setattr(p, FLAG_LEVEL_NAME, level)
