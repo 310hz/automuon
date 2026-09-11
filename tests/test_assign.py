@@ -31,8 +31,8 @@ class Transformer(nn.Module):
         super().__init__()
         self.embedding = nn.Embedding(3, 2)
         self.encoder1 = EncoderLayer()
-        self.encoder2 = without_muon(EncoderLayer())
-        with_muon(self.encoder2)
+        self.encoder2 = with_muon(EncoderLayer())
+        without_muon(self.encoder2)
         self.head1 = nn.Linear(2, 1)
         self.head2 = with_muon(nn.Linear(2, 1))
 
