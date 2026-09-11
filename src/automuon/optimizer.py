@@ -55,7 +55,7 @@ def with_muon(param, rule, default):
     elif hasattr(param, "_automuon_flag"):
         flag = param._automuon_flag
     elif rule:
-        flag = not rule(name, param)
+        flag = rule(name, param)
 
     return flag
 
