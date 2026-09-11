@@ -2,8 +2,6 @@ from collections.abc import Callable, Iterable
 from typing import Callable, TypeAlias
 
 import torch
-import torch.distributed as dist
-from muon import MuonWithAuxAdam, SingleDeviceMuonWithAuxAdam
 
 
 Param: TypeAlias = torch.nn.Parameter
@@ -12,57 +10,52 @@ Params: TypeAlias = Iterable[Param] | Iterable[NamedParam]
 Rule: TypeAlias = Callable[[str, Param], bool]
 
 
-def get_muon_with_adam(
+def get_muon_and_adam(
     params: Params,
     muon_args: dict | None = None,
     adam_args: dict | None = None,
     rule: Rule | None = None,
     default_optim: str = "muon",
-    distributed: bool | None = None,
-) -> torch.optim.Optimizer:
-
-    if distributed is None:
-        distributed = dist.is_available() and dist.is_initialized()
+) -> tuple[torch.optim.Optimizer, torch.optim.Optimizer]:
 
     muon_params = []
     adam_params = []
+    muon_args = muon_args or {}
+    adam_args = adam_args or {}
+
     for param in params:
-        if rule:
-            name, param = _check_named_param(param)
-        else:
-            param = _check_param(param)
-
-        match default_optim:
-            case "muon":
-                with_muon = True
-            case "adam":
-                with_muon = False
-            case _:
-                raise ValueError(f"Invalid default_optim: {default_optim}")
-
-        if param.ndim < 2:
-            with_muon = False
-        elif hasattr(param, "_automuon_flag"):
-            with_muon = param._automuon_flag
-        elif rule:
-            with_muon = not rule(name, param)
-
-        if with_muon:
+        if with_muon(param, rule, default_optim):
             muon_params.append(param)
         else:
             adam_params.append(param)
 
-    muon_args = muon_args or {}
-    adam_args = adam_args or {}
-    param_groups = [
-        dict(params=muon_params, use_muon=True, **muon_args),
-        dict(params=adam_params, use_muon=False, **adam_args)
-    ]
+    optimizer_muon = torch.optim.Muon(muon_params, **muon_args)
+    optimizer_adam = torch.optim.AdamW(adam_params, **adam_args)
+    return optimizer_muon, optimizer_adam
 
-    if distributed:
-        return MuonWithAuxAdam(param_groups)
+
+def with_muon(param, rule, default_optim):
+    if rule:
+        name, param = _check_named_param(param)
     else:
-        return SingleDeviceMuonWithAuxAdam(param_groups)
+        param = _check_param(param)
+
+    match default_optim:
+        case "muon":
+            flag = True
+        case "adam":
+            flag = False
+        case _:
+            raise ValueError(f"Invalid default_optim: {default_optim}")
+
+    if param.ndim != 2:
+        flag = False
+    elif hasattr(param, "_automuon_flag"):
+        flag = param._automuon_flag
+    elif rule:
+        flag = not rule(name, param)
+
+    return flag
 
 
 def _check_named_param(param):
@@ -75,6 +68,7 @@ def _check_named_param(param):
         "iterable must be a (name: str, param: torch.nn.Parameter) "
         "tuple, as returned by torch.nn.Module.named_parameters()."
     )
+
 
 def _check_param(param):
     if isinstance(param, torch.nn.Parameter):
