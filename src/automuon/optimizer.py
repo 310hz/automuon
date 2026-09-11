@@ -46,7 +46,9 @@ def with_muon(param, rule, default):
         case "adam":
             flag = False
         case _:
-            raise ValueError(f"Invalid default: {default}")
+            raise ValueError(
+                f"Invalid default value: {default}. Must be 'muon' or 'adam'."
+            )
 
     if param.ndim != 2:
         flag = False
