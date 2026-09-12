@@ -106,8 +106,8 @@ get_muon_and_adam(
 ```
 
 - `params`: An iterable of `nn.Parameter` objects, such as `model.parameters()`. When `rule` is provided, pass an iterable of `(name, param)` tuples instead, such as `model.named_parameters()`.
-- `muon_args`: A dictionary of keyword arguments passed to torch.optim.Muon.
-- `adam_args`: A dictionary of keyword arguments passed to torch.optim.Adam.
+- `muon_args`: A dictionary of keyword arguments passed to `torch.optim.Muon`.
+- `adam_args`: A dictionary of keyword arguments passed to `torch.optim.Adam`.
 - `rule`: A callable invoked as `rule(name, param)` for unmarked 2D parameters. Return `True` for Muon or `False` for Adam.
 - `default`: The optimizer for parameters not assigned by the conditions below. Either `"muon"` (the default) or `"adam"`.
 
